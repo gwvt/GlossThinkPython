@@ -1,6 +1,6 @@
 #Gloss Think Python#
 
-...as in, three verbs in a row.
+...as in three verbs in a row.
 
 After working through Allen Downey's excellent book _Think Python_, I wanted to build a tool to navigate the glossaries at the end of each chapter for reference and as a way to review concepts.
 
