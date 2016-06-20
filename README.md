@@ -11,3 +11,5 @@ Here's a summary of the files:
 * __GlossThinkPython-main.py__: presents a Tkinter GUI to navigate the database by search, listing by alphabetical order, and listing by chapter.
 
 This was fun to build, and now nice to pull up when I'm working on Python... maybe others will find it useful.
+
+![screenshot](https://github.com/gwvt/GlossThinkPython/blob/master/GlossThinkPython-screenshot.jpg)
