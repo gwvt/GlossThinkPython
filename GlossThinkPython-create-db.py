@@ -6,7 +6,7 @@ import urllib
 from bs4 import BeautifulSoup
 import sqlite3
 
-conn = sqlite3.connect('Gloss Think Python db.sqlite')
+conn = sqlite3.connect('GlossThinkPython-db.sqlite')
 cur = conn.cursor()
 
 cur.execute('DROP TABLE IF EXISTS Glosses')
