@@ -10,7 +10,7 @@ import string
 #   0 = chapter_index, 1 = order_in_chapter, 2 = gloss
 #
 
-con = sqlite3.connect('Gloss Think Python db.sqlite')
+con = sqlite3.connect('GlossThinkPython-db.sqlite')
 con.row_factory = sqlite3.Row
 cur = con.cursor()
 cur.execute('SELECT * FROM Glosses')
