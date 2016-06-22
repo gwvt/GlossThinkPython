@@ -186,13 +186,32 @@ def config_labelframe(name, column_pos, row_pos):
     name.configure(width=col_dims[column_pos], height=row_dims[row_pos])
     name.grid(column=column_pos, row=row_pos)
     config_col_row_std(name)
-    name.grid(padx=rt_pad, pady=rt_pad, sticky=(W, N, E, S))
+    name.grid(padx=Tk_global_opts('pad'), pady=Tk_global_opts('pad'), sticky=(W, N, E, S))
     name.grid_propagate(0)
 
 def config_canvas(name):
-    name.config(borderwidth=0, highlightthickness=0, background=bg_col)
+    name.config(borderwidth=0, highlightthickness=0, background=Tk_global_opts('bg_col'))
     name.grid(column=0, row=0, sticky=(N,W,E,S))
     config_col_row_std(name)
+
+def config_canvas_scroll_window(canvas, scrollbar, window):
+    canvas.config(borderwidth=0, highlightthickness=0, background=Tk_global_opts('bg_col'))
+    canvas.grid(column=0, row=0, sticky=(N,W,E,S))
+    config_col_row_std(canvas)
+
+    canvas.config(yscrollcommand=scrollbar.set)
+    scrollbar.configure(command=canvas.yview)
+    scrollbar.grid(column=1, row=0, sticky=(N,S))
+
+    canvas.create_window((0,0), window=window, anchor="nw")
+    config_col_row_std(window)
+
+def Tk_global_opts(opt):
+    options = {
+        'pad': 5,
+        'bg_col': 'gray'
+    }
+    return options[opt]
 
 #
 # Tkinter root and widgets
@@ -221,6 +240,22 @@ def config_canvas(name):
 root = Tk()
 root.title('Gloss Think Python')
 
+for i in range(0, 2):
+    root.grid_rowconfigure(i, weight=1)
+    root.grid_columnconfigure(i, weight=1)
+
+root.configure(padx=Tk_global_opts('pad'), pady=Tk_global_opts('pad'), background=Tk_global_opts('bg_col'))
+
+#
+# ttk styling
+#
+
+style = ttk.Style()
+style.theme_use('alt')
+
+style.configure('.', background=Tk_global_opts('bg_col'))
+style.configure('TLabelframe', padding=5)
+
 #
 # Tkinter control variables
 #
@@ -229,25 +264,6 @@ search_text = StringVar()
 results_text = StringVar()
 glosses_text = StringVar()
 alpha_letter = StringVar()
-
-#
-# layout, appearance, ttk styling
-#
-
-for i in range(0, 2):
-    root.grid_rowconfigure(i, weight=1)
-    root.grid_columnconfigure(i, weight=1)
-
-bg_col = '#E4E4E4'
-rt_pad = 5
-
-root.configure(padx=rt_pad, pady=rt_pad, background=bg_col)
-
-style = ttk.Style()
-style.theme_use('alt')
-
-style.configure('.', background=bg_col)
-style.configure('TLabelframe', padding=5)
 
 #
 # search frame
@@ -267,19 +283,10 @@ results_frame = ttk.LabelFrame(root, labelanchor='nw', text='Results')
 config_labelframe(results_frame, 1, 0)
 
 results_canvas = Canvas(results_frame)
-config_canvas(results_canvas)
-
 results_scrollbar = ttk.Scrollbar(results_frame, orient=VERTICAL)
-results_canvas.config(yscrollcommand=results_scrollbar.set)
-results_scrollbar.configure(command=results_canvas.yview)
-results_scrollbar.grid(column=1, row=0, sticky=(N,S))
-
 results_window = ttk.Label(results_canvas)
-
-results_canvas.create_window((0,0), window=results_window, anchor="nw")
-
 results_window.configure(textvariable=results_text)
-config_col_row_std(results_window)
+config_canvas_scroll_window(results_canvas, results_scrollbar, results_window)
 
 #
 # lists frame
@@ -299,20 +306,9 @@ alpha_tab.grid(column=0, row=0)
 config_col_row_std(alpha_tab)
 
 alpha_canvas = Canvas(alpha_tab)
-config_canvas(alpha_canvas)
-
 alpha_scrollbar = ttk.Scrollbar(alpha_tab, orient=VERTICAL)
-alpha_canvas.config(yscrollcommand=alpha_scrollbar.set)
-alpha_scrollbar.configure(command=alpha_canvas.yview)
-alpha_scrollbar.grid(column=1, row=0, sticky=(N,S))
-
 alpha_window = ttk.Frame(alpha_canvas)
-
-# place alpha window in canvas and set scrollregion
-
-alpha_canvas.create_window((0,0), window=alpha_window, anchor="nw")
-
-alpha_window.grid_columnconfigure(0, weight=1)
+config_canvas_scroll_window(alpha_canvas, alpha_scrollbar, alpha_window)
 
 # create alpha buttons
 
@@ -337,18 +333,9 @@ chapter_tab.grid(column=0, row=0)
 config_col_row_std(chapter_tab)
 
 chapter_canvas = Canvas(chapter_tab)
-config_canvas(chapter_canvas)
-
-chapter_scrollbar = ttk.Scrollbar(chapter_tab, orient=VERTICAL)
-chapter_canvas.config(yscrollcommand=chapter_scrollbar.set)
-chapter_scrollbar.configure(command=chapter_canvas.yview)
-chapter_scrollbar.grid(column=1, row=0, sticky=(N,S))
-
 chapter_window = ttk.Frame(chapter_canvas)
-
-chapter_canvas.create_window((0,0), window=chapter_window, anchor="nw")
-
-chapter_window.grid_columnconfigure(0, weight=1)
+chapter_scrollbar = ttk.Scrollbar(chapter_tab, orient=VERTICAL)
+config_canvas_scroll_window(chapter_canvas, chapter_scrollbar, chapter_window)
 
 # create chapter buttons
 
@@ -364,10 +351,8 @@ for chapter_index in range(0, 21):
     chapter_button[chapter_index].grid(column=0, row=chapter_index, sticky=(W, N, E, S))
     chapter_window.grid_rowconfigure(chapter_index, weight=1)
 
-# place chapter window in canvas and set scrollregion
-
 chapter_window.update_idletasks()
-chapter_canvas.config(background=bg_col, scrollregion=chapter_canvas.bbox(ALL))
+chapter_canvas.config(background=Tk_global_opts('bg_col'), scrollregion=chapter_canvas.bbox(ALL))
 
 # add alpha and chapter tabs to lists notebook
 
@@ -382,16 +367,9 @@ glosses_frame = ttk.LabelFrame(root, labelanchor='nw', text='Glosses')
 config_labelframe(glosses_frame, 1, 1)
 
 glosses_canvas = Canvas(glosses_frame)
-config_canvas(glosses_canvas)
-
 glosses_scrollbar = ttk.Scrollbar(glosses_frame, orient=VERTICAL)
-glosses_canvas.config(yscrollcommand=glosses_scrollbar.set)
-
-glosses_scrollbar.configure(command=glosses_canvas.yview)
-glosses_scrollbar.grid(column=1, row=0, sticky=(N,S))
-
 glosses_window = ttk.Frame(glosses_canvas)
-glosses_canvas.create_window((0,0), window=glosses_window, anchor="nw")
+config_canvas_scroll_window(glosses_canvas, glosses_scrollbar, glosses_window)
 
 # events, event loop, focus on entry box
 
