@@ -59,8 +59,14 @@ def sort_by_chapter(list_in):
 
 # generate list of all terms in chapter, then pass list to function sort_by_chapter
 
-def all_terms_chapter(chapter_index):
+def all_terms_chapter(chapter_title):
     chapter_list = []
+    space = chapter_title.rfind(' ')
+    chapter_number = chapter_title[(space + 1):]
+    if chapter_number == 'B':
+        chapter_index = 20
+    else:
+        chapter_index = int(chapter_number) - 1
     for item in glosses_dict:
         if glosses_dict[item][0] == chapter_index:
             chapter_list.append(item)
@@ -139,9 +145,6 @@ def keypress_results(KeyPress):
         for key in glosses_dict:
             if re.search(entry_reg, key, re.IGNORECASE):
                 match = True
-
-                # recreate results_list with all matches
-
                 results_list.append(key)
                 results_list.sort()
 
@@ -206,6 +209,16 @@ def config_canvas_scroll_window(canvas, scrollbar, window):
     canvas.create_window((0,0), window=window, anchor="nw")
     config_col_row_std(window)
 
+def list_buttons(list, parent, button_lambda):
+    button = {}
+    row_num = 0
+    for item in list:
+        button[item] = ttk.Button(parent, text=item)
+        button[item].configure(command= lambda item=item: button_lambda(item))
+        button[item].grid(column=0, row=row_num, sticky=(W, N, E, S))
+        parent.grid_rowconfigure(row_num, weight=1)
+        row_num += 1
+
 def Tk_global_opts(opt):
     options = {
         'pad': 5,
@@ -262,8 +275,6 @@ style.configure('TLabelframe', padding=5)
 
 search_text = StringVar()
 results_text = StringVar()
-glosses_text = StringVar()
-alpha_letter = StringVar()
 
 #
 # search frame
@@ -285,8 +296,9 @@ config_labelframe(results_frame, 1, 0)
 results_canvas = Canvas(results_frame)
 results_scrollbar = ttk.Scrollbar(results_frame, orient=VERTICAL)
 results_window = ttk.Label(results_canvas)
-results_window.configure(textvariable=results_text)
 config_canvas_scroll_window(results_canvas, results_scrollbar, results_window)
+
+results_window.configure(textvariable=results_text)
 
 #
 # lists frame
@@ -313,15 +325,7 @@ config_canvas_scroll_window(alpha_canvas, alpha_scrollbar, alpha_window)
 # create alpha buttons
 
 letters = string.ascii_lowercase
-alpha_button = {}
-alpha_row_num = 0
-
-for item in letters:
-    alpha_button[item] = ttk.Button(alpha_window, text=item)
-    alpha_button[item].configure(command= lambda item=item: all_terms_alpha(item))
-    alpha_button[item].grid(column=0, row=alpha_row_num, sticky=(W, N, E, S))
-    alpha_window.grid_rowconfigure(alpha_row_num, weight=1)
-    alpha_row_num += 1
+list_buttons(letters, alpha_window, all_terms_alpha)
 
 alpha_window.update_idletasks()
 alpha_canvas.config(scrollregion=alpha_canvas.bbox(ALL))
@@ -339,17 +343,13 @@ config_canvas_scroll_window(chapter_canvas, chapter_scrollbar, chapter_window)
 
 # create chapter buttons
 
-chapter_button = {}
-
-for chapter_index in range(0, 21):
-    if chapter_index != 20:
-        chapter_button_text = 'Ch %d' % (chapter_index + 1)
+chapter_titles = []
+for i in range(1, 22):
+    if i != 21:
+        chapter_titles.append('Ch %d' % i)
     else:
-        chapter_button_text = 'Appendix B'
-    chapter_button[chapter_index] = ttk.Button(chapter_window, text=chapter_button_text)
-    chapter_button[chapter_index].configure(command= lambda chapter_index=chapter_index: all_terms_chapter(chapter_index))
-    chapter_button[chapter_index].grid(column=0, row=chapter_index, sticky=(W, N, E, S))
-    chapter_window.grid_rowconfigure(chapter_index, weight=1)
+        chapter_titles.append('Appendix B')
+list_buttons(chapter_titles, chapter_window, all_terms_chapter)
 
 chapter_window.update_idletasks()
 chapter_canvas.config(background=Tk_global_opts('bg_col'), scrollregion=chapter_canvas.bbox(ALL))
