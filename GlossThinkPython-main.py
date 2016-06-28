@@ -192,11 +192,6 @@ def config_labelframe(name, column_pos, row_pos):
     name.grid(padx=Tk_global_opts('pad'), pady=Tk_global_opts('pad'), sticky=(W, N, E, S))
     name.grid_propagate(0)
 
-def config_canvas(name):
-    name.config(borderwidth=0, highlightthickness=0, background=Tk_global_opts('bg_col'))
-    name.grid(column=0, row=0, sticky=(N,W,E,S))
-    config_col_row_std(name)
-
 def config_canvas_scroll_window(canvas, scrollbar, window):
     canvas.config(borderwidth=0, highlightthickness=0, background=Tk_global_opts('bg_col'))
     canvas.grid(column=0, row=0, sticky=(N,W,E,S))
