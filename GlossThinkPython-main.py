@@ -133,7 +133,7 @@ def keypress_results(KeyPress):
     entry = search_text.get()
     entry_reg = '.*' + entry + '.*'
 
-    # look for matching terms for search strings of more than 2 characters
+    # look for matching terms for search strings of 2 or more characters
 
     if len(entry) == 0:
         results_list = []
