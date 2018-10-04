@@ -1,5 +1,6 @@
-# Gloss Think Python
 \* legacy code / my first Python project *
+
+# Gloss Think Python
 
 ...as in three verbs in a row.
 
